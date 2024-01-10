@@ -9,15 +9,24 @@ import {
   Text,
   Float,
   MeshReflectorMaterial,
+  useHelper,
+  BakeShadows,
+  SoftShadows,
+  AccumulativeShadows,
+  RandomizedLight,
+  ContactShadows,
 } from '@react-three/drei'
 import font from '@/assets/fonts/Ace-Records.ttf'
 import { useControls } from 'leva'
 import { Perf } from 'r3f-perf'
+import { DirectionalLightHelper } from 'three'
 
 export const Experience: React.FC = () => {
   const sphereRef = useRef<THREE.Mesh>(null!)
   const cubeRef = useRef<THREE.Mesh>(null!)
   const groupRef = useRef<THREE.Group>(null!)
+  const directionalLightRef = useRef<THREE.DirectionalLight>(null!)
+  // useHelper(directionalLightRef, DirectionalLightHelper, 1)
 
   const { position, color, visible } = useControls('sphere', {
     position: {
@@ -33,8 +42,15 @@ export const Experience: React.FC = () => {
   })
 
   const { perfVisible } = useControls({
-    perfVisible: true
+    perfVisible: true,
   })
+
+  const { contactShadowColor, contactShadowOpacity, contactShadowBlur } =
+    useControls('contact shadows', {
+      contactShadowColor: '#1d8f75',
+      contactShadowOpacity: { value: 0.4, min: 0, max: 1 },
+      contactShadowBlur: { value: 2.8, min: 0, max: 10 },
+    })
 
   useFrame((state, delta) => {
     // const angle = state.clock.elapsedTime
@@ -46,11 +62,50 @@ export const Experience: React.FC = () => {
   })
   return (
     <>
-      <color attach="background" args={['ivory']} />
-      { perfVisible && <Perf position={"top-left"} /> }
+      {/* <BakeShadows /> */}
+      {/* <SoftShadows size={ 50 } samples={ 17 } focus={ 3.75 } /> */}
+
+      <color attach='background' args={['ivory']} />
+      {perfVisible && <Perf position={'top-left'} />}
       <OrbitControls makeDefault />
-      <directionalLight position={[1, 2, 3]} intensity={4.5} />
+
+      {/* <AccumulativeShadows temporal frames={100} scale={10} /> */}
+      {/* <RandomizedLight
+        amount={8}
+        radius={1}
+        ambient={0.5}
+        intensity={3}
+        position={[1, 2, 3]}
+        bias={0.001}
+      /> */}
+      {/* </AccumulativeShadows> */}
+
+      <ContactShadows
+        position={[0, -0.99, 0]}
+        scale={10}
+        resolution={512}
+        far={5}
+        color={contactShadowColor}
+        opacity={contactShadowOpacity}
+        blur={contactShadowBlur}
+        frames={1}
+      />
+
+      <directionalLight
+        ref={directionalLightRef}
+        position={[1, 2, 3]}
+        intensity={4.5}
+        castShadow
+        shadow-mapSize={[1024, 1024]}
+        shadow-camera-near={1}
+        shadow-camera-far={10}
+        shadow-camera-top={5}
+        shadow-camera-right={5}
+        shadow-camera-bottom={-5}
+        shadow-camera-left={-5}
+      />
       <ambientLight intensity={1.5} />
+
       <group ref={groupRef}>
         <PivotControls
           anchor={[0, 0, 0]}
@@ -60,6 +115,7 @@ export const Experience: React.FC = () => {
           scale={2}
         >
           <mesh
+            castShadow
             ref={sphereRef}
             position={[position.x, position.y, 0]}
             visible={visible}
@@ -78,6 +134,7 @@ export const Experience: React.FC = () => {
           </mesh>
         </PivotControls>
         <mesh
+          castShadow
           ref={cubeRef}
           rotation-y={Math.PI * 0.5}
           position-x={2}
@@ -88,7 +145,12 @@ export const Experience: React.FC = () => {
         </mesh>
         <TransformControls object={cubeRef} />
       </group>
-      <mesh position-y={-1} rotation-x={-Math.PI * 0.5} scale={10}>
+      <mesh
+        // receiveShadow
+        position-y={-1}
+        rotation-x={-Math.PI * 0.5}
+        scale={10}
+      >
         <planeGeometry />
         <MeshReflectorMaterial
           resolution={512}

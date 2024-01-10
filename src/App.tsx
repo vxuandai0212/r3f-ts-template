@@ -8,6 +8,7 @@ function App() {
     <>
       <Leva collapsed />
       <Canvas
+        shadows
         gl={{
           antialias: true,
           toneMapping: ACESFilmicToneMapping,
