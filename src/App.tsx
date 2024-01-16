@@ -1,7 +1,8 @@
 import { Canvas } from '@react-three/fiber'
-import { Experience } from '@/components/Experience'
+import { PostProcessing } from '@/components/PostProcessing'
 import { ACESFilmicToneMapping, SRGBColorSpace } from 'three'
 import { Leva } from 'leva'
+import { Bvh } from '@react-three/drei'
 
 function App() {
   return (
@@ -18,10 +19,12 @@ function App() {
           fov: 45,
           near: 0.1,
           far: 200,
-          position: [3, 2, 6],
+          position: [1, 2, 6],
         }}
       >
-        <Experience />
+        {/* <Bvh> */}
+          <PostProcessing />
+        {/* </Bvh> */}
       </Canvas>
     </>
   )

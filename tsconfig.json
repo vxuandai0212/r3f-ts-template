@@ -22,7 +22,8 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["vite-plugin-glsl/ext"]
   },
   "exclude": ["node_modules", "dist"]
 }
